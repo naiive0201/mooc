@@ -1,6 +1,5 @@
 package io.learning.hs.mooc.controller;
 
-import io.learning.hs.mooc.controller.WriterNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

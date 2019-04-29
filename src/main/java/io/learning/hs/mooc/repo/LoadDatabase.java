@@ -1,5 +1,4 @@
-package io.learning.hs.mooc.controller;
-import io.learning.hs.mooc.repo.WriterRepository;
+package io.learning.hs.mooc.repo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
