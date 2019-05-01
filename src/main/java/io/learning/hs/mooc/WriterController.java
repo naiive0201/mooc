@@ -82,8 +82,11 @@ public class WriterController {
     }
 
     @DeleteMapping("/writers/{id}")
-    void deleteWriter(@PathVariable Long id) {
+    ResponseEntity<?> deleteWriter(@PathVariable Long id) {
+
         repository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
     }
 
 }
