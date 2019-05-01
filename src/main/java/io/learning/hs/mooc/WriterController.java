@@ -1,11 +1,12 @@
-package io.learning.hs.mooc.controller;
+package io.learning.hs.mooc;
 
-import io.learning.hs.mooc.repo.Writer;
-import io.learning.hs.mooc.repo.WriterRepository;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,8 +22,11 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class WriterController {
     private final WriterRepository repository;
 
-    WriterController(WriterRepository repository) {
+    private final WriterResourceAssembler assembler;
+
+    public WriterController(WriterRepository repository, WriterResourceAssembler assembler) {
         this.repository = repository;
+        this.assembler = assembler;
     }
 
     // Aggregate root
@@ -30,9 +34,7 @@ public class WriterController {
     @GetMapping(value = "/writers", produces = "application/json; charset=UTF-8")
     Resources<Resource<Writer>> all() {
         List<Resource<Writer>> writers = repository.findAll().stream()
-                .map(writer -> new Resource<>(writer,
-                        linkTo(methodOn(WriterController.class).one(writer.getId())).withSelfRel(),
-                        linkTo(methodOn(WriterController.class).all()).withRel("writers")))
+                .map(assembler::toResource)
                 .collect(Collectors.toList());
 
         return new Resources<>(writers,
@@ -40,9 +42,13 @@ public class WriterController {
     }
 
 
-    @PostMapping("/writers")
-    Writer newWriter(@RequestBody Writer newWriter) {
-        return repository.save(newWriter);
+    @PostMapping(value = "/writers", produces = "application/json; charset=UTF-8")
+    ResponseEntity<?> newEmployee(@RequestBody Writer newWriter) throws URISyntaxException {
+        Resource<Writer> resource = assembler.toResource(repository.save(newWriter));
+
+        return  ResponseEntity
+                .created(new URI(resource.getId().expand().getHref()))
+                .body(resource);
     }
 
     // Single item
@@ -50,15 +56,13 @@ public class WriterController {
     Resource<Writer> one(@PathVariable Long id) {
         Writer writer = repository.findById(id)
                 .orElseThrow(() -> new WriterNotFoundException(id));
-        return new Resource<>(writer,
-                linkTo(methodOn(WriterController.class).one(id)).withSelfRel(),
-                linkTo(methodOn(WriterController.class).all()).withRel("writers"));
+        return assembler.toResource(writer);
     }
 
     @PutMapping("/writers/{id}")
-    Writer replaceWriter(@RequestBody Writer newWriter, @PathVariable Long id) {
+    ResponseEntity<?>  replaceWriter(@RequestBody Writer newWriter, @PathVariable Long id) throws URISyntaxException {
 
-        return repository.findById(id)
+        Writer updateWriter = repository.findById(id)
                 .map(writer -> {
                     writer.setName(newWriter.getName());
                     writer.setRole(newWriter.getRole());
@@ -68,6 +72,13 @@ public class WriterController {
                     newWriter.setId(id);
                     return repository.save(newWriter);
                 });
+
+        Resource<Writer> resource = assembler.toResource(updateWriter);
+
+        return ResponseEntity
+                .created(new URI(resource.getId().expand().getHref()))
+                .body(resource);
+
     }
 
     @DeleteMapping("/writers/{id}")

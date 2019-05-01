@@ -1,4 +1,4 @@
-package io.learning.hs.mooc.repo;
+package io.learning.hs.mooc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -16,8 +16,8 @@ public class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(WriterRepository repo) {
         return args -> {
-            log.info("Preloading " + repo.save(new Writer("Hyeonsoo", "admin")));
-            log.info("Preloading " + repo.save(new Writer("Euna", "Reader")));
+            log.info("Preloading " + repo.save(new Writer("Hyeonsoo", "Joo", "admin")));
+            log.info("Preloading " + repo.save(new Writer("Euna", "Joo", "Reader")));
         };
 
     }

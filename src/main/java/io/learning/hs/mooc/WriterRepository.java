@@ -1,4 +1,4 @@
-package io.learning.hs.mooc.repo;
+package io.learning.hs.mooc;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

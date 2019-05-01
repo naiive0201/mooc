@@ -1,4 +1,4 @@
-package io.learning.hs.mooc.controller;
+package io.learning.hs.mooc;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;

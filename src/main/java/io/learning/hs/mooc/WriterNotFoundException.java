@@ -1,4 +1,4 @@
-package io.learning.hs.mooc.controller;
+package io.learning.hs.mooc;
 
 /**
  * @author Hyeonsoo
